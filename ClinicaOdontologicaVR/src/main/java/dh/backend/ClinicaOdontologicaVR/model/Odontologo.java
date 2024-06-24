@@ -19,6 +19,8 @@ public class Odontologo {
         this.matricula = matricula;
     }
 
+    public Odontologo() {}
+
     public Integer getId() {return id;}
 
     public void setId(Integer id) {this.id = id;}

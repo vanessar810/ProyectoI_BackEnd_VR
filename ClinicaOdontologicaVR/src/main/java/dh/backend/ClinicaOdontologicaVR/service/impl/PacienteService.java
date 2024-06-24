@@ -15,15 +15,25 @@ public class PacienteService implements IPacienteService {
         this.pacienteIDao = pacienteIDao;
     }
 
-    public Paciente registrarPaciente(Paciente paciente){
+    public Paciente registrarPaciente(Paciente paciente) {
         return pacienteIDao.registrar(paciente);
     }
 
-    public Paciente buscarPorId(Integer id){
+    public Paciente buscarPorId(Integer id) {
         return pacienteIDao.buscarPorId(id);
     }
 
-    public List<Paciente> buscarTodos(){
+    public List<Paciente> buscarTodos() {
         return pacienteIDao.buscarTodos();
+    }
+
+    @Override
+    public void actualizarPaciente(Paciente paciente) {
+        pacienteIDao.actualizar(paciente);
+    }
+
+    @Override
+    public void eliminarPaciente(Integer id) {
+     pacienteIDao.eliminar(id);
     }
 }

@@ -10,4 +10,6 @@ public interface IOdontologoService {
     Odontologo buscarOdontologo(Integer id);
 
     List<Odontologo> buscarTodos();
+    void actualizarOdontologo(Odontologo odontologo);
+    void eliminarOdontologo(Integer id);
 }
