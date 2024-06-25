@@ -1,7 +1,7 @@
 package dh.backend.ClinicaOdontologicaVR.service;
 
 import dh.backend.ClinicaOdontologicaVR.dao.impl.OdontologoDaoH2;
-import dh.backend.ClinicaOdontologicaVR.model.Odontologo;
+import dh.backend.ClinicaOdontologicaVR.entity.Odontologo;
 import dh.backend.ClinicaOdontologicaVR.service.impl.OdontologoService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

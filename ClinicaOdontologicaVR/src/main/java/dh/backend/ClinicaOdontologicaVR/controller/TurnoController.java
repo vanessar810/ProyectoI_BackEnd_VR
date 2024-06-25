@@ -1,14 +1,18 @@
 package dh.backend.ClinicaOdontologicaVR.controller;
 
 
-import dh.backend.ClinicaOdontologicaVR.model.Turno;
+import dh.backend.ClinicaOdontologicaVR.entity.Turno;
 import dh.backend.ClinicaOdontologicaVR.service.ITurnoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
- @RestController
+import java.util.Optional;
+
+@RestController
  @RequestMapping("/turno")
  public class TurnoController{
         private ITurnoService turnoService;
@@ -34,35 +38,38 @@ import java.util.List;
 
      @GetMapping("/{id}")
      public ResponseEntity<Turno> buscarTurnoPorId(@PathVariable Integer id){
-         Turno turno = turnoService.buscarPorId(id);
-         if(turno != null){
-             return ResponseEntity.ok(turno);
+         Optional<Turno> turno = turnoService.buscarPorId(id);
+         if(turno.isPresent()){
+             return ResponseEntity.ok(turno.get());
          }else{
              return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
          }
      }
 
-        @PutMapping
-        public ResponseEntity<String> modificarTurno(@RequestBody Turno turno) {
-            Turno turnoModificar = turnoService.buscarPorId(turno.getId());
-            if(turnoModificar != null){
-                turnoService.actualizarTurno(turno);
-                return ResponseEntity.ok("{\"message\": \"turno actualizado\"}");
-            } else {
-                return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
+        @PutMapping("/{id}")
+        public ResponseEntity<String> modificarTurno(@PathVariable Integer id, @RequestBody Turno turno){
+            turnoService.actualizarTurno(id, turno);
+            return ResponseEntity.ok("{\"message\": \"turno modificado\"}");
         }
 
      @DeleteMapping("/{id}")
      public ResponseEntity<String>  borrarTurno(@PathVariable Integer id) {
-         Turno turnoBuscado = turnoService.buscarPorId(id);
-         if(turnoBuscado!= null){
+         Optional<Turno> turnoBuscado = turnoService.buscarPorId(id);
+         if(turnoBuscado.isPresent()){
              turnoService.eliminarTurno(id);
              return ResponseEntity.ok("{\"message\": \"turno eliminado\"}");
          } else {
              return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
          }
      }
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    @GetMapping("/fechas")
+    public ResponseEntity<List<Turno>> buscarEntreFechas(@RequestParam String inicio, @RequestParam String fin){
+        LocalDate fechaInicio = LocalDate.parse(inicio, formatter);
+        LocalDate fechaFinal = LocalDate.parse(fin, formatter);
+
+        return ResponseEntity.ok(turnoService.buscarTurnoEntreFechas(fechaInicio, fechaFinal));
+    }
     }
 
 
