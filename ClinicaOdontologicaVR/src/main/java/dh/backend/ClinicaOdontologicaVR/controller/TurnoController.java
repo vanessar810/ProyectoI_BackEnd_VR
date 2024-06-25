@@ -1,8 +1,8 @@
 package dh.backend.ClinicaOdontologicaVR.controller;
 
+
 import dh.backend.ClinicaOdontologicaVR.model.Turno;
 import dh.backend.ClinicaOdontologicaVR.service.ITurnoService;
-import dh.backend.ClinicaOdontologicaVR.service.impl.TurnoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

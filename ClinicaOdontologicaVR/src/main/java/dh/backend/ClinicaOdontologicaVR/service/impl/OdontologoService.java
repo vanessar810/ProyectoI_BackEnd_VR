@@ -1,10 +1,9 @@
 package dh.backend.ClinicaOdontologicaVR.service.impl;
 
+
 import dh.backend.ClinicaOdontologicaVR.dao.IDao;
 import dh.backend.ClinicaOdontologicaVR.model.Odontologo;
-import dh.backend.ClinicaOdontologicaVR.model.Paciente;
 import dh.backend.ClinicaOdontologicaVR.service.IOdontologoService;
-import dh.backend.ClinicaOdontologicaVR.service.IPacienteService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +16,13 @@ public class OdontologoService implements IOdontologoService {
     public OdontologoService(IDao<Odontologo> odontologoIDao) {
         this.odontologoIDao = odontologoIDao;
     }
+    public IDao<Odontologo> getOdontologoIDao() {
+        return odontologoIDao;
+    }
+    public void setOdontologoIDao(IDao<Odontologo> odontologoIDao) {
+        this.odontologoIDao = odontologoIDao;
+    }
+
     public Odontologo registrarOdontologo(Odontologo odontologo) {
         return odontologoIDao.registrar(odontologo);
     }

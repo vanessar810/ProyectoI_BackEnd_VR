@@ -2,26 +2,22 @@ package dh.backend.ClinicaOdontologicaVR.dao.impl;
 
 import dh.backend.ClinicaOdontologicaVR.dao.IDao;
 import dh.backend.ClinicaOdontologicaVR.db.H2Connection;
-import dh.backend.ClinicaOdontologicaVR.model.Domicilio;
 import dh.backend.ClinicaOdontologicaVR.model.Odontologo;
-import dh.backend.ClinicaOdontologicaVR.model.Paciente;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
     @Component
     public class OdontologoDaoH2 implements IDao<Odontologo> {
         private static Logger LOGGER = LoggerFactory.getLogger(OdontologoDaoH2.class);
-        private static String SQL_INSERT = "INSERT INTO ODONTOLOGOS VALUES (DEFAULT,?,?,?)";
-        private static String SQL_SELECT_ID = "SELECT * FROM ODONTOLOGOS WHERE ID=?";
-        private static String SQL_SELECT_ALL = "SELECT * FROM ODONTOLOGOS";
-        private static String SQL_UPDATE = "UPDATE ODONTOLOGOS SET NOMRRE=?, APELLIDO=?, MATRICULA=?";
-        private static String SQL_DELETE = "DELETE FROM ODONTOLOGOS WHERE ID=?";
+        private static String INSERT = "INSERT INTO ODONTOLOGOS VALUES (DEFAULT,?,?,?)";
+        private static String BUSCAR = "SELECT * FROM ODONTOLOGOS WHERE ID = ?";
+        private static String BUSCAR_ALL = "SELECT * FROM ODONTOLOGOS";
+        private static String UPDATE = "UPDATE ODONTOLOGOS SET NOMBRE=?, APELLIDO=?, MATRICULA=? WHERE ID=?";
+        private static String DELETE = "DELETE FROM ODONTOLOGOS WHERE ID=?";
         @Override
         public Odontologo registrar(Odontologo odontologo) {
             Connection connection = null;
@@ -32,21 +28,19 @@ import java.util.List;
 
                 //Domicilio domicilioGuardado = domicilioDaoH2.registrar(paciente.getDomicilio());
 
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement preparedStatement = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, odontologo.getNombre());
                 preparedStatement.setString(2, odontologo.getApellido());
                 preparedStatement.setString(3, odontologo.getMatricula());
                 preparedStatement.executeUpdate();
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
                 while (resultSet.next()){
-                    Integer id= resultSet.getInt(1);
+                    int id= resultSet.getInt(1);
                     odontologoARetornar = new Odontologo(id, odontologo.getNombre(), odontologo.getApellido(),
                             odontologo.getMatricula());
                 }
                 LOGGER.info("Odontologo guardado: "+ odontologoARetornar);
-
                 connection.commit();
-                connection.setAutoCommit(true);
             }catch (Exception e){
                 if(connection!=null){
                     try {
@@ -66,7 +60,6 @@ import java.util.List;
                     e.printStackTrace();
                 }
             }
-
             return odontologoARetornar;
         }
 
@@ -77,62 +70,41 @@ import java.util.List;
 
             try {
                 connection = H2Connection.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT_ID);
+                PreparedStatement preparedStatement = connection.prepareStatement(BUSCAR);
                 preparedStatement.setInt(1, id);
                 ResultSet resultSet = preparedStatement.executeQuery();
-
                 while (resultSet.next()){
-                    Integer idDevuelto = resultSet.getInt(1);
-                    String nombre = resultSet.getString(2);
-                    String apellido = resultSet.getString(3);
-                    String matricula = resultSet.getString(4);
-                    odontologoEncontrado = new Odontologo(idDevuelto, nombre, apellido, matricula);
+                    odontologoEncontrado = crearOdontologo(resultSet);
                 }
-                LOGGER.info("Odontologo encontrado: "+ odontologoEncontrado);
+                LOGGER.info("Odontologo encontrado: "+odontologoEncontrado);
 
-            }catch (Exception e){
-                LOGGER.info(e.getMessage());
-                e.printStackTrace();
-            }finally {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOGGER.info(e.getMessage());
-                    e.printStackTrace();
-                }
+            } catch (ClassNotFoundException e) {
+                LOGGER.error(e.getMessage());
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
             }
             return odontologoEncontrado;
         }
 
         @Override
         public List<Odontologo> buscarTodos() {
-            List<Odontologo> odontologos = new ArrayList<>();
             Connection connection = null;
+            List<Odontologo> odontologos = new ArrayList<>();
+            Odontologo odontologoObtenido = null;
             try{
                 connection = H2Connection.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(SQL_SELECT_ALL);
+                ResultSet resultSet = statement.executeQuery(BUSCAR_ALL);
                 while (resultSet.next()){
-                    Integer idDevuelto = resultSet.getInt(1);
-                    String apellido = resultSet.getString(2);
-                    String nombre = resultSet.getString(3);
-                    String matricula = resultSet.getString(4);
-                    Odontologo odontologo = new Odontologo(idDevuelto, apellido, nombre,matricula);
-
-                    LOGGER.info("Odontologo listado: "+ odontologo);
-                    odontologos.add(odontologo);
+                    odontologoObtenido = crearOdontologo(resultSet);
+                    odontologos.add(odontologoObtenido);
+                    LOGGER.info("Agregando : "+odontologoObtenido);
                 }
 
-            }catch (Exception e){
-                LOGGER.info(e.getMessage());
-                e.printStackTrace();
-            }finally {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOGGER.info(e.getMessage());
-                    e.printStackTrace();
-                }
+            } catch (ClassNotFoundException e) {
+                LOGGER.error(e.getMessage());
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
             }
             return odontologos;
 }
@@ -145,7 +117,7 @@ import java.util.List;
                 connection = H2Connection.getConnection();
                 connection.setAutoCommit(false);
 
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE);
+                PreparedStatement preparedStatement = connection.prepareStatement(UPDATE);
                 preparedStatement.setString(1, odontologo.getNombre());
                 preparedStatement.setString(2, odontologo.getApellido());
                 preparedStatement.setString(3, odontologo.getMatricula());
@@ -184,7 +156,7 @@ import java.util.List;
                 connection = H2Connection.getConnection();
                 connection.setAutoCommit(false);
 
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_DELETE);
+                PreparedStatement preparedStatement = connection.prepareStatement(DELETE);
                 preparedStatement.setInt(1, id);
                 preparedStatement.executeUpdate();
 
@@ -211,5 +183,13 @@ import java.util.List;
                     e.printStackTrace();
                 }
             }
+        }
+        private Odontologo crearOdontologo(ResultSet resultSet) throws SQLException {
+            int id = resultSet.getInt(1);
+            String nombre = resultSet.getString(2);
+            String apellido = resultSet.getString(3);
+            String matricula = resultSet.getString(4);
+            Odontologo odontologo = new Odontologo(id,nombre,apellido, matricula);
+            return odontologo;
         }
     }

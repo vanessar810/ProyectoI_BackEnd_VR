@@ -18,9 +18,9 @@ function fetchOdontologos() {
                 <td>${odontologo.id}</td>
                 <td>${odontologo.nombre}</td>
                 <td>${odontologo.apellido}</td>
-                <td>${odontologo.nroMatricula}</td>
+                <td>${odontologo.matricula}</td>
                 <td>
-                  <button class="btn btn-primary btn-sm" onclick="editOdontologo(${odontologo.id}, '${odontologo.nombre}', '${odontologo.apellido}', '${odontologo.nroMatricula}')">Modificar</button>
+                  <button class="btn btn-primary btn-sm" onclick="editOdontologo(${odontologo.id}, '${odontologo.nombre}', '${odontologo.apellido}', '${odontologo.matricula}')">Modificar</button>
                   <button class="btn btn-danger btn-sm" onclick="deleteOdontologo(${odontologo.id})">Eliminar</button>
                 </td>
               `;

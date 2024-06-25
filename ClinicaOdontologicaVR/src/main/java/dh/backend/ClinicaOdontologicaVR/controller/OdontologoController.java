@@ -1,13 +1,10 @@
 package dh.backend.ClinicaOdontologicaVR.controller;
 
+
 import dh.backend.ClinicaOdontologicaVR.model.Odontologo;
-import dh.backend.ClinicaOdontologicaVR.model.Paciente;
-import dh.backend.ClinicaOdontologicaVR.model.Turno;
 import dh.backend.ClinicaOdontologicaVR.service.IOdontologoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
